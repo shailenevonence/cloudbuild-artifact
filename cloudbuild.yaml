@@ -100,14 +100,14 @@ steps:
     args:
       - 'build'
       - '-t'
-      - 'us-central1-docker.pkg.dev/$PROJECT_ID/test-application/flask-app-1:$SHORT_SHA'
+      - 'us-central1-docker.pkg.dev/$PROJECT_ID/test-application/flask-app-1:latest'
       - '-f'
       - 'app1/Dockerfile'
       - 'app1/'
   - name: 'gcr.io/cloud-builders/docker'
     args:
       - 'push'
-      - 'us-central1-docker.pkg.dev/$PROJECT_ID/test-application/flask-app-1:$SHORT_SHA'
+      - 'us-central1-docker.pkg.dev/$PROJECT_ID/test-application/flask-app-1:latest'
 
   # SSH into GCE VM and copy app1 Docker image
   - name: 'gcr.io/cloud-builders/gcloud'
@@ -118,21 +118,21 @@ steps:
         gcloud compute ssh git-test-ins \
         --zone=us-central1-a \
         --project=$PROJECT_ID \
-        --command 'docker pull us-central1-docker.pkg.dev/$PROJECT_ID/test-application/flask-app-1:$SHORT_SHA' 
+        --command 'docker pull us-central1-docker.pkg.dev/$PROJECT_ID/test-application/flask-app-1:latest' 
 
   # Build and push Docker image for app2
   - name: 'gcr.io/cloud-builders/docker'
     args:
       - 'build'
       - '-t'
-      - 'us-central1-docker.pkg.dev/$PROJECT_ID/test-application/flask-app-2:$SHORT_SHA'
+      - 'us-central1-docker.pkg.dev/$PROJECT_ID/test-application/flask-app-2:latest'
       - '-f'
       - 'app2/Dockerfile'
       - 'app2/'
   - name: 'gcr.io/cloud-builders/docker'
     args:
       - 'push'
-      - 'us-central1-docker.pkg.dev/$PROJECT_ID/test-application/flask-app-2:$SHORT_SHA'
+      - 'us-central1-docker.pkg.dev/$PROJECT_ID/test-application/flask-app-2:latest'
 
   # SSH into GCE VM and copy app2 Docker image
   - name: 'gcr.io/cloud-builders/gcloud'
@@ -143,7 +143,7 @@ steps:
         gcloud compute ssh git-test-ins \
         --zone=us-central1-a \
         --project=$PROJECT_ID \
-        --command 'docker pull us-central1-docker.pkg.dev/$PROJECT_ID/test-application/flask-app-2:$SHORT_SHA' 
+        --command 'docker pull us-central1-docker.pkg.dev/$PROJECT_ID/test-application/flask-app-2:latest' 
 
 options:
   env:
