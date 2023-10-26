@@ -3,17 +3,17 @@ steps:
     args:
       - 'build'
       - '-t'
-      - 'gcr.io/[PROJECT_ID]/flask-app-1:${SHORT_SHA}'
+      - 'gcr.io/$PROJECT_ID/flask-app-1:${SHORT_SHA}'
       - '-f'
-      - 'Dockerfile'
+      - './app1/Dockerfile'
       - '.'
   - name: 'gcr.io/cloud-builders/docker'
     args:
       - 'build'
       - '-t'
-      - 'gcr.io/[PROJECT_ID]/flask-app-2:${SHORT_SHA}'
+      - 'gcr.io/$PROJECT_ID/flask-app-2:${SHORT_SHA}'
       - '-f'
-      - 'Dockerfile'
+      - './app2/Dockerfile'
       - '.'
   - name: 'gcr.io/cloud-builders/docker'
     args:
