@@ -24,5 +24,10 @@ steps:
       - 'push'
       - 'us-central1-docker.pkg.dev/$PROJECT_ID/test-application/flask-app-2:${SHORT_SHA}'
 images:
-  - 'gcr.io/[PROJECT_ID]/flask-app-1:${SHORT_SHA}'
-  - 'gcr.io/[PROJECT_ID]/flask-app-2:${SHORT_SHA}'
+  - 'us-central1-docker.pkg.dev/$PROJECT_ID/test-application/flask-app-1:${SHORT_SHA}'
+  - 'us-central1-docker.pkg.dev/$PROJECT_ID/test-application/flask-app-2:${SHORT_SHA}'
+
+options:
+  env:
+    - 'LOGGING_OPTION=CLOUD_LOGGING_ONLY'
+logsBucket: ncorium-bucket
