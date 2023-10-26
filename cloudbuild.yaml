@@ -118,6 +118,7 @@ steps:
         gcloud compute ssh git-test-ins \
         --zone=us-central1-a \
         --project=$PROJECT_ID \
+        --command 'gcloud auth print-access-token | docker login -u oauth2accesstoken --password-stdin us-central1-docker.pkg.dev' \
         --command 'docker pull us-central1-docker.pkg.dev/$PROJECT_ID/test-application/flask-app-1:latest' 
 
   # Build and push Docker image for app2
@@ -143,6 +144,7 @@ steps:
         gcloud compute ssh git-test-ins \
         --zone=us-central1-a \
         --project=$PROJECT_ID \
+        --command 'gcloud auth print-access-token | docker login -u oauth2accesstoken --password-stdin us-central1-docker.pkg.dev' \
         --command 'docker pull us-central1-docker.pkg.dev/$PROJECT_ID/test-application/flask-app-2:latest' 
 
 options:
