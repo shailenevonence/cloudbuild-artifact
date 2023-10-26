@@ -108,7 +108,16 @@ steps:
     args:
       - 'push'
       - 'us-central1-docker.pkg.dev/$PROJECT_ID/test-application/flask-app-1:latest'
-
+  - name: 'gcr.io/cloud-builders/gcloud'
+    entrypoint: 'bash'
+    args:
+      - '-c'
+      - |
+        gcloud compute ssh artifact-test \
+        --zone=us-central1-a \
+        --project=$PROJECT_ID \
+        --command 'sudo su -c "cd / && mkdir folder1"'
+        
   # SSH into GCE VM and copy app1 Docker image
   - name: 'gcr.io/cloud-builders/gcloud'
     entrypoint: 'bash'
@@ -118,11 +127,7 @@ steps:
         gcloud compute ssh artifact-test \
         --zone=us-central1-a \
         --project=$PROJECT_ID \
-        --command 'sudo su' \
-        --command 'cd /' \
-        --command 'mkdir folder1' \
-        --command 'gcloud auth print-access-token | docker login -u oauth2accesstoken --password-stdin us-central1-docker.pkg.dev' \
-        --command 'docker pull us-central1-docker.pkg.dev/$PROJECT_ID/test-application/flask-app-1:latest' 
+        --command 'sudo su -c "gcloud auth print-access-token | docker login -u oauth2accesstoken --password-stdin us-central1-docker.pkg.dev && docker pull us-central1-docker.pkg.dev/nc-ev-test/test-application/flask-app-1:latest"
 
   # Build and push Docker image for app2
   - name: 'gcr.io/cloud-builders/docker'
@@ -138,6 +143,16 @@ steps:
       - 'push'
       - 'us-central1-docker.pkg.dev/$PROJECT_ID/test-application/flask-app-2:latest'
 
+  - name: 'gcr.io/cloud-builders/gcloud'
+    entrypoint: 'bash'
+    args:
+      - '-c'
+      - |
+        gcloud compute ssh artifact-test \
+        --zone=us-central1-a \
+        --project=$PROJECT_ID \
+        --command 'sudo su -c "cd / && mkdir folder2"'
+        
   # SSH into GCE VM and copy app2 Docker image
   - name: 'gcr.io/cloud-builders/gcloud'
     entrypoint: 'bash'
@@ -147,11 +162,7 @@ steps:
         gcloud compute ssh artifact-test \
         --zone=us-central1-a \
         --project=$PROJECT_ID \
-        --command 'sudo su' \
-        --command 'cd /' \
-        --command 'mkdir folder2' \
-        --command 'gcloud auth print-access-token | docker login -u oauth2accesstoken --password-stdin us-central1-docker.pkg.dev' \
-        --command 'docker pull us-central1-docker.pkg.dev/$PROJECT_ID/test-application/flask-app-2:latest' 
+        --command 'sudo su -c "gcloud auth print-access-token | docker login -u oauth2accesstoken --password-stdin us-central1-docker.pkg.dev && docker pull us-central1-docker.pkg.dev/nc-ev-test/test-application/flask-app-2:latest" 
 
 options:
   env:
