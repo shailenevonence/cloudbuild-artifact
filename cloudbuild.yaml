@@ -1,9 +1,43 @@
+# steps:
+#   - name: 'gcr.io/cloud-builders/docker'
+#     args:
+#       - 'build'
+#       - '-t'
+#       - 'gcr.io/$PROJECT_ID/flask-app-1:$SHORT_SHA'
+#       - '-f'
+#       - 'app1/Dockerfile'
+#       - 'app1/'
+#   - name: 'gcr.io/cloud-builders/docker'
+#     args:
+#       - 'build'
+#       - '-t'
+#       - 'gcr.io/$PROJECT_ID/flask-app-2:$SHORT_SHA'
+#       - '-f'
+#       - 'app2/Dockerfile'
+#       - 'app2/'
+#   - name: 'gcr.io/cloud-builders/docker'
+#     args:
+#       - 'push'
+#       - 'gcr.io/$PROJECT_ID/flask-app-1:$SHORT_SHA'
+#   - name: 'gcr.io/cloud-builders/docker'
+#     args:
+#       - 'push'
+#       - 'gcr.io/$PROJECT_ID/flask-app-2:$SHORT_SHA'
+# images:
+#   - 'gcr.io/$PROJECT_ID/flask-app-1:$SHORT_SHA'
+#   - 'gcr.io/$PROJECT_ID/flask-app-2:$SHORT_SHA'
+
+# options:
+#   env:
+#     - 'LOGGING_OPTION=CLOUD_LOGGING_ONLY'
+# logsBucket: ncorium-bucket
+
 steps:
   - name: 'gcr.io/cloud-builders/docker'
     args:
       - 'build'
       - '-t'
-      - 'gcr.io/$PROJECT_ID/flask-app-1:$SHORT_SHA'
+      - 'us-central1-docker.pkg.dev/$PROJECT_ID/test-application/flask-app-1:$SHORT_SHA'
       - '-f'
       - 'app1/Dockerfile'
       - 'app1/'
@@ -11,21 +45,21 @@ steps:
     args:
       - 'build'
       - '-t'
-      - 'gcr.io/$PROJECT_ID/flask-app-2:$SHORT_SHA'
+      - 'us-central1-docker.pkg.dev/$PROJECT_ID/test-application/flask-app-2:$SHORT_SHA'
       - '-f'
       - 'app2/Dockerfile'
       - 'app2/'
   - name: 'gcr.io/cloud-builders/docker'
     args:
       - 'push'
-      - 'gcr.io/$PROJECT_ID/flask-app-1:$SHORT_SHA'
+      - 'us-central1-docker.pkg.dev/$PROJECT_ID/test-application/flask-app-1:$SHORT_SHA'
   - name: 'gcr.io/cloud-builders/docker'
     args:
       - 'push'
-      - 'gcr.io/$PROJECT_ID/flask-app-2:$SHORT_SHA'
+      - 'us-central1-docker.pkg.dev/$PROJECT_ID/test-application/flask-app-2:$SHORT_SHA'
 images:
-  - 'gcr.io/$PROJECT_ID/flask-app-1:$SHORT_SHA'
-  - 'gcr.io/$PROJECT_ID/flask-app-2:$SHORT_SHA'
+  - 'us-central1-docker.pkg.dev/$PROJECT_ID/test-application/flask-app-1:$SHORT_SHA'
+  - 'us-central1-docker.pkg.dev/$PROJECT_ID/test-application/flask-app-2:$SHORT_SHA'
 
 options:
   env:
