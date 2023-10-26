@@ -1,4 +1,6 @@
+# Pushing this code to Container Registry
 # steps:
+#   # Building Docker image for flask-app-1
 #   - name: 'gcr.io/cloud-builders/docker'
 #     args:
 #       - 'build'
@@ -7,6 +9,8 @@
 #       - '-f'
 #       - 'app1/Dockerfile'
 #       - 'app1/'
+
+#   # Building Docker image for flask-app-2
 #   - name: 'gcr.io/cloud-builders/docker'
 #     args:
 #       - 'build'
@@ -15,24 +19,83 @@
 #       - '-f'
 #       - 'app2/Dockerfile'
 #       - 'app2/'
+
+#   # Pushing Docker image for flask-app-1 to Container Registry
 #   - name: 'gcr.io/cloud-builders/docker'
 #     args:
 #       - 'push'
 #       - 'gcr.io/$PROJECT_ID/flask-app-1:$SHORT_SHA'
+
+#   # Pushing Docker image for flask-app-2 to Container Registry
 #   - name: 'gcr.io/cloud-builders/docker'
 #     args:
 #       - 'push'
 #       - 'gcr.io/$PROJECT_ID/flask-app-2:$SHORT_SHA'
+
+# # List of Docker images to track
 # images:
 #   - 'gcr.io/$PROJECT_ID/flask-app-1:$SHORT_SHA'
 #   - 'gcr.io/$PROJECT_ID/flask-app-2:$SHORT_SHA'
 
+# # Build options and environment variables
 # options:
 #   env:
 #     - 'LOGGING_OPTION=CLOUD_LOGGING_ONLY'
+
+# # Logs bucket configuration
 # logsBucket: ncorium-bucket
 
+
+# Pushing this code to Artifact Registory
+# steps:
+#   # Building Docker image for flask-app-1
+#   - name: 'gcr.io/cloud-builders/docker'
+#     args:
+#       - 'build'
+#       - '-t'
+#       - 'us-central1-docker.pkg.dev/$PROJECT_ID/test-application/flask-app-1:$SHORT_SHA'
+#       - '-f'
+#       - 'app1/Dockerfile'
+#       - 'app1/'
+
+#   # Building Docker image for flask-app-2
+#   - name: 'gcr.io/cloud-builders/docker'
+#     args:
+#       - 'build'
+#       - '-t'
+#       - 'us-central1-docker.pkg.dev/$PROJECT_ID/test-application/flask-app-2:$SHORT_SHA'
+#       - '-f'
+#       - 'app2/Dockerfile'
+#       - 'app2/'
+
+#   # Pushing Docker image for flask-app-1 to Artifact Registry
+#   - name: 'gcr.io/cloud-builders/docker'
+#     args:
+#       - 'push'
+#       - 'us-central1-docker.pkg.dev/$PROJECT_ID/test-application/flask-app-1:$SHORT_SHA'
+
+#   # Pushing Docker image for flask-app-2 to Artifact Registry
+#   - name: 'gcr.io/cloud-builders/docker'
+#     args:
+#       - 'push'
+#       - 'us-central1-docker.pkg.dev/$PROJECT_ID/test-application/flask-app-2:$SHORT_SHA'
+
+# # List of Docker images to track
+# images:
+#   - 'us-central1-docker.pkg.dev/$PROJECT_ID/test-application/flask-app-1:$SHORT_SHA'
+#   - 'us-central1-docker.pkg.dev/$PROJECT_ID/test-application/flask-app-2:$SHORT_SHA'
+
+# # Build options and environment variables
+# options:
+#   env:
+#     - 'LOGGING_OPTION=CLOUD_LOGGING_ONLY'
+
+# # Logs bucket configuration
+# logsBucket: ncorium-bucket
+
+# Try to push image to a specific VM in 2 different folders
 steps:
+  # Build and push Docker image for app1
   - name: 'gcr.io/cloud-builders/docker'
     args:
       - 'build'
@@ -41,6 +104,23 @@ steps:
       - '-f'
       - 'app1/Dockerfile'
       - 'app1/'
+  - name: 'gcr.io/cloud-builders/docker'
+    args:
+      - 'push'
+      - 'us-central1-docker.pkg.dev/$PROJECT_ID/test-application/flask-app-1:$SHORT_SHA'
+
+  # SSH into GCE VM and copy app1 Docker image
+  - name: 'gcr.io/cloud-builders/gcloud'
+    entrypoint: 'bash'
+    args:
+      - '-c'
+      - |
+        gcloud compute ssh git-test-ins \
+        --zone=us-central1-a \
+        --project=$PROJECT_ID \
+        --command 'docker pull us-central1-docker.pkg.dev/$PROJECT_ID/test-application/flask-app-1:$SHORT_SHA' 
+
+  # Build and push Docker image for app2
   - name: 'gcr.io/cloud-builders/docker'
     args:
       - 'build'
@@ -52,16 +132,21 @@ steps:
   - name: 'gcr.io/cloud-builders/docker'
     args:
       - 'push'
-      - 'us-central1-docker.pkg.dev/$PROJECT_ID/test-application/flask-app-1:$SHORT_SHA'
-  - name: 'gcr.io/cloud-builders/docker'
-    args:
-      - 'push'
       - 'us-central1-docker.pkg.dev/$PROJECT_ID/test-application/flask-app-2:$SHORT_SHA'
-images:
-  - 'us-central1-docker.pkg.dev/$PROJECT_ID/test-application/flask-app-1:$SHORT_SHA'
-  - 'us-central1-docker.pkg.dev/$PROJECT_ID/test-application/flask-app-2:$SHORT_SHA'
+
+  # SSH into GCE VM and copy app2 Docker image
+  - name: 'gcr.io/cloud-builders/gcloud'
+    entrypoint: 'bash'
+    args:
+      - '-c'
+      - |
+        gcloud compute ssh git-test-ins \
+        --zone=us-central1-a \
+        --project=$PROJECT_ID \
+        --command 'docker pull us-central1-docker.pkg.dev/$PROJECT_ID/test-application/flask-app-2:$SHORT_SHA' 
 
 options:
   env:
     - 'LOGGING_OPTION=CLOUD_LOGGING_ONLY'
 logsBucket: ncorium-bucket
+
