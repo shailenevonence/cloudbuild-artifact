@@ -100,7 +100,7 @@ steps:
     args:
       - 'build'
       - '-t'
-      - 'us-central1-docker.pkg.dev/$PROJECT_ID/test-application/flask-app-1:$SHORT_SHA'
+      - 'us-central1-docker.pkg.dev/$PROJECT_ID/test-application/flask-app-1:latest'  # Use 'latest' tag
       - '-f'
       - 'app1/Dockerfile'
       - 'app1/'
@@ -110,7 +110,7 @@ steps:
     args:
       - 'build'
       - '-t'
-      - 'us-central1-docker.pkg.dev/$PROJECT_ID/test-application/flask-app-2:$SHORT_SHA'
+      - 'us-central1-docker.pkg.dev/$PROJECT_ID/test-application/flask-app-2:latest'  # Use 'latest' tag
       - '-f'
       - 'app2/Dockerfile'
       - 'app2/'
@@ -119,13 +119,13 @@ steps:
   - name: 'gcr.io/cloud-builders/docker'
     args:
       - 'push'
-      - 'us-central1-docker.pkg.dev/$PROJECT_ID/test-application/flask-app-1:$SHORT_SHA'
+      - 'us-central1-docker.pkg.dev/$PROJECT_ID/test-application/flask-app-1:latest'  # Use 'latest' tag
 
   # Pushing Docker image for flask-app-2 to Artifact Registry
   - name: 'gcr.io/cloud-builders/docker'
     args:
       - 'push'
-      - 'us-central1-docker.pkg.dev/$PROJECT_ID/test-application/flask-app-2:$SHORT_SHA'
+      - 'us-central1-docker.pkg.dev/$PROJECT_ID/test-application/flask-app-2:latest'  # Use 'latest' tag
 
   # Authenticate and log in to Docker using a GCP access token
   - name: 'gcr.io/cloud-builders/gcloud'
@@ -136,27 +136,27 @@ steps:
         gcloud auth print-access-token | docker login -u oauth2accesstoken --password-stdin us-central1-docker.pkg.dev
 
   # Push Docker image for flask-app-1 to the remote VM
-  - name: 'gcr.io/cloud-builders/docker'
+  - name: 'gcr.io/cloud-builders/gcloud'
     entrypoint: 'bash'
     args:
       - '-c'
       - |
-        docker pull us-central1-docker.pkg.dev/$PROJECT_ID/test-application/flask-app-1:$SHORT_SHA
-        docker save us-central1-docker.pkg.dev/$PROJECT_ID/test-application/flask-app-1:$SHORT_SHA | ssh artifact-test 'docker load'
+        gcloud compute ssh artifact-test --zone=us-central1-a --command="docker pull us-central1-docker.pkg.dev/$PROJECT_ID/test-application/flask-app-1:latest"
+        gcloud compute ssh artifact-test --zone=us-central1-a --command="docker save us-central1-docker.pkg.dev/$PROJECT_ID/test-application/flask-app-1:latest | docker load"
 
   # Push Docker image for flask-app-2 to the remote VM
-  - name: 'gcr.io/cloud-builders/docker'
+  - name: 'gcr.io/cloud-builders/gcloud'
     entrypoint: 'bash'
     args:
       - '-c'
       - |
-        docker pull us-central1-docker.pkg.dev/$PROJECT_ID/test-application/flask-app-2:$SHORT_SHA
-        docker save us-central1-docker.pkg.dev/$PROJECT_ID/test-application/flask-app-2:$SHORT_SHA | ssh artifact-test 'docker load'
+        gcloud compute ssh artifact-test --zone=us-central1-a --command="docker pull us-central1-docker.pkg.dev/$PROJECT_ID/test-application/flask-app-2:latest"
+        gcloud compute ssh artifact-test --zone=us-central1-a --command="docker save us-central1-docker.pkg.dev/$PROJECT_ID/test-application/flask-app-2:latest | docker load"
 
 # List of Docker images to track
 images:
-  - 'us-central1-docker.pkg.dev/$PROJECT_ID/test-application/flask-app-1:$SHORT_SHA'
-  - 'us-central1-docker.pkg.dev/$PROJECT_ID/test-application/flask-app-2:$SHORT_SHA'
+  - 'us-central1-docker.pkg.dev/$PROJECT_ID/test-application/flask-app-1:latest'
+  - 'us-central1-docker.pkg.dev/$PROJECT_ID/test-application/flask-app-2:latest'
 
 # Build options and environment variables
 options:
@@ -165,4 +165,3 @@ options:
 
 # Logs bucket configuration
 logsBucket: ncorium-bucket
-
