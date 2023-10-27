@@ -95,73 +95,65 @@
 
 # Try to push image to a specific VM in 2 different folders
 steps:
-  # Building Docker image for flask-app-1
+  # Build and push Docker image for app1
   - name: 'gcr.io/cloud-builders/docker'
     args:
       - 'build'
       - '-t'
-      - 'us-central1-docker.pkg.dev/$PROJECT_ID/test-application/flask-app-1:latest'  # Use 'latest' tag
+      - 'us-central1-docker.pkg.dev/$PROJECT_ID/test-application/flask-app-1:latest'
       - '-f'
       - 'app1/Dockerfile'
       - 'app1/'
+  - name: 'gcr.io/cloud-builders/docker'
+    args:
+      - 'push'
+      - 'us-central1-docker.pkg.dev/$PROJECT_ID/test-application/flask-app-1:latest'
 
-  # Building Docker image for flask-app-2
+  # SSH into GCE VM and copy app1 Docker image
+  - name: 'gcr.io/cloud-builders/gcloud'
+    entrypoint: 'bash'
+    args:
+      - '-c'
+      - |
+        gcloud compute ssh artifact-test \
+        --zone=us-central1-a \
+        --project=$PROJECT_ID \
+        --command 'sudo su' \
+        --command 'cd /' \
+        --command 'mkdir folder1' \
+        --command 'gcloud auth print-access-token | docker login -u oauth2accesstoken --password-stdin us-central1-docker.pkg.dev' \
+        --command 'docker pull us-central1-docker.pkg.dev/$PROJECT_ID/test-application/flask-app-1:latest' 
+
+  # Build and push Docker image for app2
   - name: 'gcr.io/cloud-builders/docker'
     args:
       - 'build'
       - '-t'
-      - 'us-central1-docker.pkg.dev/$PROJECT_ID/test-application/flask-app-2:latest'  # Use 'latest' tag
+      - 'us-central1-docker.pkg.dev/$PROJECT_ID/test-application/flask-app-2:latest'
       - '-f'
       - 'app2/Dockerfile'
       - 'app2/'
-
-  # Pushing Docker image for flask-app-1 to Artifact Registry
   - name: 'gcr.io/cloud-builders/docker'
     args:
       - 'push'
-      - 'us-central1-docker.pkg.dev/$PROJECT_ID/test-application/flask-app-1:latest'  # Use 'latest' tag
+      - 'us-central1-docker.pkg.dev/$PROJECT_ID/test-application/flask-app-2:latest'
 
-  # Pushing Docker image for flask-app-2 to Artifact Registry
-  - name: 'gcr.io/cloud-builders/docker'
-    args:
-      - 'push'
-      - 'us-central1-docker.pkg.dev/$PROJECT_ID/test-application/flask-app-2:latest'  # Use 'latest' tag
-
-  # Authenticate and log in to Docker using a GCP access token
+  # SSH into GCE VM and copy app2 Docker image
   - name: 'gcr.io/cloud-builders/gcloud'
     entrypoint: 'bash'
     args:
       - '-c'
       - |
-        gcloud auth print-access-token | docker login -u oauth2accesstoken --password-stdin us-central1-docker.pkg.dev
+        gcloud compute ssh artifact-test \
+        --zone=us-central1-a \
+        --project=$PROJECT_ID \
+        --command 'sudo su' \
+        --command 'cd /' \
+        --command 'mkdir folder2' \
+        --command 'gcloud auth print-access-token | docker login -u oauth2accesstoken --password-stdin us-central1-docker.pkg.dev' \
+        --command 'docker pull us-central1-docker.pkg.dev/$PROJECT_ID/test-application/flask-app-2:latest' 
 
-  # Push Docker image for flask-app-1 to the remote VM
-  - name: 'gcr.io/cloud-builders/gcloud'
-    entrypoint: 'bash'
-    args:
-      - '-c'
-      - |
-        gcloud compute ssh artifact-test --zone=us-central1-a --command="docker pull us-central1-docker.pkg.dev/$PROJECT_ID/test-application/flask-app-1:latest"
-        gcloud compute ssh artifact-test --zone=us-central1-a --command="docker save us-central1-docker.pkg.dev/$PROJECT_ID/test-application/flask-app-1:latest | docker load"
-
-  # Push Docker image for flask-app-2 to the remote VM
-  - name: 'gcr.io/cloud-builders/gcloud'
-    entrypoint: 'bash'
-    args:
-      - '-c'
-      - |
-        gcloud compute ssh artifact-test --zone=us-central1-a --command="docker pull us-central1-docker.pkg.dev/$PROJECT_ID/test-application/flask-app-2:latest"
-        gcloud compute ssh artifact-test --zone=us-central1-a --command="docker save us-central1-docker.pkg.dev/$PROJECT_ID/test-application/flask-app-2:latest | docker load"
-
-# List of Docker images to track
-images:
-  - 'us-central1-docker.pkg.dev/$PROJECT_ID/test-application/flask-app-1:latest'
-  - 'us-central1-docker.pkg.dev/$PROJECT_ID/test-application/flask-app-2:latest'
-
-# Build options and environment variables
 options:
   env:
     - 'LOGGING_OPTION=CLOUD_LOGGING_ONLY'
-
-# Logs bucket configuration
 logsBucket: ncorium-bucket
