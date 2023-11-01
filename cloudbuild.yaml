@@ -120,7 +120,6 @@ steps:
         --project=$PROJECT_ID \
         --command 'sudo su' \
         --command 'cd /' \
-        --command 'mkdir folder1' \
         --command 'gcloud auth print-access-token | docker login -u oauth2accesstoken --password-stdin us-central1-docker.pkg.dev' \
         --command 'docker pull us-central1-docker.pkg.dev/$PROJECT_ID/test-application/flask-app-1:latest' 
 
@@ -149,7 +148,6 @@ steps:
         --project=$PROJECT_ID \
         --command 'sudo su' \
         --command 'cd /' \
-        --command 'mkdir folder2' \
         --command 'gcloud auth print-access-token | docker login -u oauth2accesstoken --password-stdin us-central1-docker.pkg.dev' \
         --command 'docker pull us-central1-docker.pkg.dev/$PROJECT_ID/test-application/flask-app-2:latest' 
 
