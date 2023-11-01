@@ -102,7 +102,7 @@ steps:
     args:
       - 'build'
       - '-t'
-      - 'us-central1-docker.pkg.dev/vars.PROJECT_ID/test-application/flask-app-1:latest'
+      - 'us-central1-docker.pkg.dev/$PROJECT_ID/test-application/flask-app-1:latest'
       - '-f'
       - 'app1/Dockerfile'
       - 'app1/'
@@ -110,7 +110,7 @@ steps:
   - name: 'gcr.io/cloud-builders/docker'
     args:
       - 'push'
-      - 'us-central1-docker.pkg.dev/vars.PROJECT_ID/test-application/flask-app-1:latest'
+      - 'us-central1-docker.pkg.dev/$PROJECT_ID/test-application/flask-app-1:latest'
 
   # SSH into GCE VM and configure Docker for Google Artifact Registry and run app1
   - name: 'gcr.io/cloud-builders/gcloud'
@@ -120,23 +120,23 @@ steps:
       - |
         gcloud compute ssh artifact-test \
         --zone=us-central1-a \
-        --project=vars.PROJECT_ID \
+        --project=$PROJECT_ID \
         --command 'echo "yes" | gcloud auth configure-docker us-central1-docker.pkg.dev'
         gcloud compute ssh artifact-test \
         --zone=us-central1-a \
-        --project=vars.PROJECT_ID \
-        --command 'sudo docker pull us-central1-docker.pkg.dev/vars.PROJECT_ID/test-application/flask-app-1:latest'
+        --project=$PROJECT_ID \
+        --command 'sudo docker pull us-central1-docker.pkg.dev/$PROJECT_ID/test-application/flask-app-1:latest'
         gcloud compute ssh artifact-test \
         --zone=us-central1-a \
-        --project=vars.PROJECT_ID \
-        --command 'sudo docker run -d -p 8080:80 us-central1-docker.pkg.dev/vars.PROJECT_ID/test-application/flask-app-1:latest'
+        --project=$PROJECT_ID \
+        --command 'sudo docker run -d -p 8080:80 us-central1-docker.pkg.dev/$PROJECT_ID/test-application/flask-app-1:latest'
 
   # Build and push Docker image for app2
   - name: 'gcr.io/cloud-builders/docker'
     args:
       - 'build'
       - '-t'
-      - 'us-central1-docker.pkg.dev/vars.PROJECT_ID/test-application/flask-app-2:latest'
+      - 'us-central1-docker.pkg.dev/$PROJECT_ID/test-application/flask-app-2:latest'
       - '-f'
       - 'app2/Dockerfile'
       - 'app2/'
@@ -144,7 +144,7 @@ steps:
   - name: 'gcr.io/cloud-builders/docker'
     args:
       - 'push'
-      - 'us-central1-docker.pkg.dev/vars.PROJECT_ID/test-application/flask-app-2:latest'
+      - 'us-central1-docker.pkg.dev/$PROJECT_ID/test-application/flask-app-2:latest'
 
   # SSH into GCE VM and configure Docker for Google Artifact Registry and run app2
   - name: 'gcr.io/cloud-builders/gcloud'
@@ -154,16 +154,16 @@ steps:
       - |
         gcloud compute ssh artifact-test \
         --zone=us-central1-a \
-        --project=vars.PROJECT_ID \
+        --project=$PROJECT_ID \
         --command 'echo "yes" | gcloud auth configure-docker us-central1-docker.pkg.dev'
         gcloud compute ssh artifact-test \
         --zone=us-central1-a \
-        --project=vars.PROJECT_ID \
-        --command 'sudo docker pull us-central1-docker.pkg.dev/vars.PROJECT_ID/test-application/flask-app-2:latest'
+        --project=$PROJECT_ID \
+        --command 'sudo docker pull us-central1-docker.pkg.dev/$PROJECT_ID/test-application/flask-app-2:latest'
         gcloud compute ssh artifact-test \
         --zone=us-central1-a \
-        --project=vars.PROJECT_ID \
-        --command 'sudo docker run -d -p 8081:81 us-central1-docker.pkg.dev/vars.PROJECT_ID/test-application/flask-app-2:latest'
+        --project=$PROJECT_ID \
+        --command 'sudo docker run -d -p 8081:81 us-central1-docker.pkg.dev/$PROJECT_ID/test-application/flask-app-2:latest'
 
 options:
   env:
