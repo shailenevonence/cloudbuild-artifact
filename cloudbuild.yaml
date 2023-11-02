@@ -102,17 +102,7 @@
 # cloudbuild.yaml
 
 # cloudbuild.yaml
-
 steps:
-  # Execute the custom port cleanup script
-  - name: 'gcr.io/cloud-builders/gcloud'
-    entrypoint: 'bash'
-    args:
-      - '-c'
-      - |
-        chmod +x port_cleanup.sh
-        ./port_cleanup.sh
-
   # Build and push Docker image for app1
   - name: 'gcr.io/cloud-builders/docker'
     args:
@@ -180,14 +170,6 @@ steps:
         --zone=us-central1-a \
         --project=$PROJECT_ID \
         --command 'sudo docker run -d -p 8081:81 us-central1-docker.pkg.dev/$PROJECT_ID/test-application/flask-app-2:latest'
-
-  # Continue with your deployment steps
-  - name: 'gcr.io/cloud-builders/gcloud'
-    entrypoint: 'bash'
-    args:
-      - '-c'
-      - |
-        # Other deployment steps here
 
 options:
   env:
